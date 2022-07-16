@@ -1,0 +1,44 @@
+schema = {  (namespace_decl | root_decl | table_decl | struct_decl | enum_decl | union_decl |  rpc_decl )*  }
+
+namespace_decl = {"namespace" ~ identifier ~ ( "." ~ identifier )* ~ ";"}
+
+table_decl = { "table" ~ identifier ~ "{" ~ field_decl* ~ "}"  }
+
+struct_decl = { "struct" ~ identifier ~ "{" ~ field_decl+ ~ "}"  }
+
+field_decl = {identifier ~ ":" ~ typing ~ ("=" ~ scalar)? ~ ";"}
+
+root_decl = {"root_type" ~  identifier ~ ";"}
+
+union_decl =  { "union" ~ identifier ~ "{" ~ enumval_decl ~ ("," ~ enumval_decl)* ~ "}"  }
+
+enum_decl =  { "enum" ~ identifier ~ ":" ~ typing ~ "{" ~ enumval_decl ~ ("," ~  enumval_decl)* ~","? ~ "}"  }
+
+enumval_decl = { identifier ~ ("=" ~ integer_constant)?}
+
+rpc_decl = { "rpc_service" ~ identifier ~ "{" ~ rpc_method+ ~ "}" }
+
+rpc_method = {rpc_name ~ "(" ~ rpc_input ~ ")" ~":" ~ rpc_output ~ ";"}
+
+rpc_name = {identifier}
+rpc_input = {identifier}
+rpc_output ={identifier}
+
+typing = {array_type |  value_type }
+value_type = { "bool" | "byte" | "ubyte" | "short" | "ushort" | "long" | "ulong" | "double" | "int8" | "uint8" | "int16" | "uint16" | "int32" | "uint32"| "int64" | "uint64" | "float32" | "float64" | "int" | "uint" | "float" | "string"  | identifier }
+array_type  = {"["~value_type~"]"}
+
+single_value = { scalar | string_constant}
+string_constant = { identifier }
+
+scalar = {boolean_constant | integer_constant | float_constant}
+
+integer_constant = { "-"? ~ ASCII_DIGIT+ }
+float_constant = {"-"? ~ ASCII_DIGIT+~"."~ASCII_DIGIT* }
+
+boolean_constant = { "true" | "false" }
+
+identifier  = @{  (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+any_ascii = @{ ASCII+ }
+WHITESPACE = _{ " " | "\t" | "\n"}
+COMMENT = _{ "//" ~ (!NEWLINE ~ ANY)* ~ NEWLINE }
